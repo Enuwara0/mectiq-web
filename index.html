@@ -1,497 +1,515 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="description" content="MECTIQ — IoT, Robotics & Software. Coming Soon." />
-<title>MECTIQ — Coming Soon</title>
-<style>
-  :root{
-    --cyan: #00fff0;
-    --accent: #7df9ff;
-    --glass: rgba(255,255,255,0.03);
-    --white: #e9f7ff;
-    --muted: rgba(233,247,255,0.08);
-    --bg: #000000;
-    --max-width: 980px;
-    --safe-pad: 24px;
-    --radius: 14px;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MECTIQ | Robotics & Tech</title>
+    <meta name="description" content="MECTIQ - Where Code Meets Reality. Innovative robotics and technology solutions. Coming Soon.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
 
-  /* Reset-ish */
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, -apple-system;
-    background:var(--bg);
-    color:var(--white);
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    overflow:hidden;
-    line-height:1.15;
-  }
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-green: #0aff00;
+            --deep-black: #050505;
+            --terminal-bg: rgba(10, 15, 15, 0.95);
+        }
 
-  /* Full screen stage */
-  .stage{
-    position:relative;
-    min-height:100vh;
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:48px var(--safe-pad);
-    overflow:hidden;
-  }
+        body {
+            background-color: var(--deep-black);
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent scrollbars on main body */
+            color: white;
+            font-family: 'Roboto Mono', monospace;
+        }
 
-  /* Canvas (matrix rain) sits behind content */
-  canvas#matrix{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    display:block;
-    pointer-events:none;
-    opacity:0.85;
-    mix-blend-mode:screen;
-  }
+        /* Canvas Positioning */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
 
-  /* subtle grid overlay - CSS animated */
-  .grid-overlay{
-    position:fixed;
-    inset:0;
-    z-index:1;
-    background-image:
-      repeating-linear-gradient(0deg, rgba(0,255,240,0.03) 0 1px, transparent 1px 60px),
-      repeating-linear-gradient(90deg, rgba(0,255,240,0.02) 0 1px, transparent 1px 60px);
-    background-size: 100% 100%, 100% 100%;
-    opacity:0.35;
-    transform:translateZ(0);
-    animation: gridMove 16s linear infinite;
-    pointer-events:none;
-  }
-  @keyframes gridMove{
-    from{background-position:0 0, 0 0}
-    to{background-position:0 -400px, -400px 0}
-  }
+        /* Content Overlay */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, transparent 0%, #000000 90%); /* Vignette effect */
+            pointer-events: none; /* Let clicks pass through to canvas where no content exists */
+        }
 
-  /* Card with the content */
-  .card{
-    position:relative;
-    z-index:5;
-    width:100%;
-    max-width:var(--max-width);
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border: 1px solid rgba(255,255,255,0.04);
-    border-radius: 18px;
-    padding: clamp(28px, 5vw, 48px);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-    display:flex;
-    gap:24px;
-    align-items:center;
-    justify-content:space-between;
-    backdrop-filter: blur(6px) saturate(120%);
-    -webkit-backdrop-filter: blur(6px) saturate(120%);
-    overflow:hidden;
-  }
+        .interactive-element {
+            pointer-events: auto;
+        }
 
-  /* left column text */
-  .left{
-    flex:1 1 60%;
-    min-width:0;
-  }
+        /* Typography & Glows */
+        .brand-title {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-shadow: 
+                0 0 10px rgba(255, 255, 255, 0.8),
+                0 0 20px rgba(0, 243, 255, 0.5),
+                0 0 40px rgba(0, 243, 255, 0.3);
+        }
 
-  /* Glitch title container */
-  .title-wrap{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:12px;
-  }
+        .typewriter-cursor::after {
+            content: '|';
+            animation: blink 1s step-start infinite;
+            color: var(--neon-cyan);
+        }
 
-  /* "MECTIQ" main title */
-  .title{
-    font-weight:800;
-    font-size: clamp(34px, 8vw, 64px);
-    letter-spacing: 0.06em;
-    line-height:1;
-    position:relative;
-    color:var(--white);
-    text-transform:uppercase;
-    font-family: "Segoe UI", Roboto, system-ui, -apple-system, "SF Pro Display", "Helvetica Neue", Arial;
-  }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
 
-  /* Glitch effect via pseudo layers */
-  .title::before,
-  .title::after{
-    content:attr(data-text);
-    position:absolute;
-    left:0;
-    top:0;
-    width:100%;
-    height:100%;
-    opacity:0.9;
-    pointer-events:none;
-    mix-blend-mode:screen;
-    clip-path: inset(0 0 0 0);
-  }
-  .title::before{
-    color: var(--cyan);
-    transform: translateX(-2px);
-    text-shadow: -2px 0 var(--cyan);
-    opacity:0.85;
-  }
-  .title::after{
-    color: var(--accent);
-    transform: translateX(2px);
-    text-shadow: 2px 0 var(--accent);
-    opacity:0.75;
-  }
+        /* Neon Button */
+        .neon-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px var(--neon-cyan), inset 0 0 5px var(--neon-cyan);
+            backdrop-filter: blur(5px);
+        }
 
-  /* glitch keyframes: shifts, slices via clip-path and skew */
-  @keyframes glitch-anim {
-    0% { transform: translateX(0) skewX(0deg); clip-path: inset(0 0 0 0); opacity:1; }
-    10% { transform: translateX(-6px) skewX(-3deg); clip-path: inset(10% 0 60% 0); }
-    20% { transform: translateX(4px) skewX(2deg); clip-path: inset(30% 0 20% 0); }
-    30% { transform: translateX(-2px) skewX(-2deg); clip-path: inset(50% 0 10% 0); }
-    45% { transform: translateX(0) skewX(0deg); clip-path: inset(0 0 0 0); }
-    100% { transform: translateX(0); clip-path: inset(0 0 0 0); opacity:1; }
-  }
+        .neon-btn:hover {
+            background-color: rgba(0, 243, 255, 0.1);
+            box-shadow: 
+                0 0 20px var(--neon-cyan), 
+                inset 0 0 10px var(--neon-cyan);
+            text-shadow: 0 0 8px white;
+            transform: translateY(-2px);
+        }
 
-  /* active glitch class toggles animation on pseudo layers and main */
-  .title.glitch{
-    animation: glitch-anim 550ms steps(3, end);
-  }
-  .title.glitch::before{ animation: glitch-anim 500ms steps(3, end); }
-  .title.glitch::after{ animation: glitch-anim 420ms steps(2, end); }
+        .neon-btn-secondary {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: 0 0 5px var(--neon-green), inset 0 0 5px var(--neon-green);
+        }
 
-  /* small subtitle / slogan */
-  .slogan{
-    font-size: clamp(12px, 2.4vw, 16px);
-    color: rgba(233,247,255,0.78);
-    letter-spacing: 0.06em;
-    margin-top:6px;
-    font-weight:600;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
-  }
+        .neon-btn-secondary:hover {
+            background-color: rgba(10, 255, 0, 0.1);
+            box-shadow: 
+                0 0 20px var(--neon-green), 
+                inset 0 0 10px var(--neon-green);
+        }
 
-  .desc{
-    margin-top:14px;
-    color:rgba(233,247,255,0.6);
-    font-size: clamp(12px, 2.4vw, 14px);
-    max-width:70ch;
-  }
+        /* WhatsApp Icon Color */
+        .wa-icon {
+            fill: currentColor;
+        }
 
-  /* Right column - CTA */
-  .right{
-    flex:0 0 260px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
+        /* Terminal Modal */
+        #terminal-modal {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .terminal-window {
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+        }
 
-  /* CTA button style */
-  .cta{
-    position:relative;
-    display:inline-block;
-    text-decoration:none;
-    padding:14px 22px;
-    border-radius:12px;
-    border:1.5px solid var(--muted);
-    color:var(--white);
-    font-weight:700;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    background:transparent;
-    overflow:hidden;
-    transition:all 260ms cubic-bezier(.2,.9,.3,1);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.55), 0 0 26px rgba(0,255,240,0.03) inset;
-    width:100%;
-    max-width:220px;
-  }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 
-  /* border outline with cyan tint */
-  .cta:before{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:inherit;
-    padding:2px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(0,255,240,0.06));
-    -webkit-mask: linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events:none;
-  }
-
-  /* Filling hover effect via pseudo element */
-  .cta .fill{
-    position:absolute;
-    inset:0;
-    background: linear-gradient(90deg, rgba(0,255,240,0.08), rgba(125,249,255,0.06));
-    transform: translateY(100%);
-    transition: transform 310ms cubic-bezier(.2,.9,.3,1);
-    z-index:0;
-    border-radius:inherit;
-    pointer-events:none;
-  }
-  .cta:hover .fill,
-  .cta:focus .fill{
-    transform: translateY(0%);
-  }
-
-  /* CTA text sits above fill */
-  .cta .label{
-    position:relative;
-    z-index:2;
-    display:inline-flex;
-    align-items:center;
-    gap:10px;
-  }
-
-  /* small WhatsApp icon using CSS */
-  .wa-icon{
-    display:inline-block;
-    width:18px;
-    height:18px;
-    border-radius:4px;
-    background:linear-gradient(180deg, var(--cyan), var(--accent));
-    box-shadow: 0 2px 6px rgba(0,255,240,0.16);
-    -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="white" d="M20.5 3.5a11 11 0 10-16.02 15.02L3 21l3.56-1.12A11 11 0 0020.5 3.5zM12 19a7 7 0 117-7 7.01 7.01 0 01-7 7z"/></svg>') center/contain no-repeat;
-    mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="white" d="M20.5 3.5a11 11 0 10-16.02 15.02L3 21l3.56-1.12A11 11 0 0020.5 3.5zM12 19a7 7 0 117-7 7.01 7.01 0 01-7 7z"/></svg>') center/contain no-repeat;
-  }
-
-  /* small footnote */
-  .foot{
-    margin-top:18px;
-    font-size:12px;
-    color:rgba(233,247,255,0.32);
-  }
-
-  /* Fancy accent lines behind card */
-  .neon-lines{
-    position:absolute;
-    inset:auto -10% -10% auto;
-    width:360px;
-    height:360px;
-    transform: rotate(12deg);
-    filter: blur(28px);
-    z-index:2;
-    pointer-events:none;
-    opacity:0.08;
-    background:
-      radial-gradient(circle at 10% 20%, rgba(0,255,240,0.9) 0 2%, transparent 20%),
-      radial-gradient(circle at 90% 80%, rgba(125,249,255,0.8) 0 2%, transparent 25%);
-  }
-
-  /* responsive adjustments */
-  @media (max-width:880px){
-    .card{flex-direction:column; align-items:flex-start; gap:18px}
-    .right{width:100%; flex:0 0 auto; display:flex; justify-content:flex-end}
-    .cta{max-width:100%; width:100%}
-  }
-  @media (max-width:420px){
-    .card{padding:18px}
-    .title{font-size:28px}
-    .right{justify-content:center}
-    .desc{font-size:13px}
-  }
-
-  /* small animated cursor line beside slogan (cyber feel) */
-  .slogan:after{
-    content:"";
-    display:inline-block;
-    width:8px;
-    height:3px;
-    background:var(--cyan);
-    margin-left:8px;
-    vertical-align:middle;
-    opacity:0.9;
-    transform-origin:center;
-    animation: pulse 1.4s ease-in-out infinite;
-    border-radius:2px;
-  }
-  @keyframes pulse{
-    0%,100%{transform:scaleX(1)}
-    50%{transform:scaleX(0.1); opacity:0.6}
-  }
-
-  /* small instructions at bottom center */
-  .bottom-note{
-    position:fixed;
-    z-index:6;
-    left:50%;
-    transform:translateX(-50%);
-    bottom:18px;
-    color:rgba(233,247,255,0.12);
-    font-size:12px;
-    letter-spacing:0.08em;
-    pointer-events:none;
-  }
-
-</style>
+        .ai-message {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 2px rgba(0, 243, 255, 0.5);
+        }
+        .user-message {
+            color: white;
+        }
+        .typing-indicator::after {
+            content: '...';
+            animation: blink 1s steps(4, end) infinite;
+        }
+    </style>
 </head>
 <body>
-  <div class="stage" role="main" aria-labelledby="mectiq-title">
-    <!-- canvas for matrix rain -->
-    <canvas id="matrix" aria-hidden="true"></canvas>
 
-    <!-- animated grid -->
-    <div class="grid-overlay" aria-hidden="true"></div>
+    <!-- Background Animation Canvas -->
+    <canvas id="bg-canvas"></canvas>
 
-    <div class="card" role="region" aria-label="Coming soon information">
-      <div class="neon-lines" aria-hidden="true"></div>
+    <!-- Main Content -->
+    <main class="content-layer px-4 w-full">
+        
+        <!-- Logo / Title -->
+        <h1 class="brand-title text-5xl md:text-7xl lg:text-9xl font-black text-white mb-4 text-center select-none">
+            MECTIQ
+        </h1>
 
-      <div class="left">
-        <div class="title-wrap">
-          <h1 id="mectiq-title" class="title" data-text="MECTIQ">MECTIQ</h1>
+        <!-- Typewriter Slogan -->
+        <div class="h-8 md:h-10 mb-8"> <!-- Fixed height to prevent layout shift -->
+            <p class="text-neon-cyan text-sm md:text-xl lg:text-2xl tracking-widest text-cyan-400">
+                <span id="typewriter-text"></span><span class="typewriter-cursor"></span>
+            </p>
         </div>
 
-        <div class="slogan" aria-hidden="false">Where Code Meets Reality</div>
-
-        <p class="desc">
-          Pushing the edge of IoT, Robotics and Software — building intelligent systems that sense, reason and act.
-          We're crafting something high-performance, secure and future-ready. Join our beta and get the first demos.
-        </p>
-
-        <div class="foot">
-          Launching with private previews — sign up soon.
+        <!-- Status Indicator -->
+        <div class="flex items-center space-x-2 mb-12 animate-pulse">
+            <div class="w-2 h-2 md:w-3 md:h-3 bg-green-500 rounded-full shadow-[0_0_10px_#22c55e]"></div>
+            <span class="text-xs md:text-sm text-gray-400 uppercase tracking-widest">System Status: Coming Soon...</span>
         </div>
-      </div>
 
-      <div class="right">
-        <a class="cta" href="https://wa.me/94781295948" target="_blank" rel="noopener" aria-label="Chat on WhatsApp with MECTIQ">
-          <span class="fill" aria-hidden="true"></span>
-          <span class="label">
-            <span class="wa-icon" aria-hidden="true"></span>
-            Chat on WhatsApp
-          </span>
-        </a>
-      </div>
+        <!-- Buttons Container -->
+        <div class="flex flex-col md:flex-row gap-4 items-center">
+            
+            <!-- WhatsApp CTA -->
+            <a href="https://wa.me/94781295948" target="_blank" class="interactive-element neon-btn group border border-cyan-400 text-cyan-400 px-8 py-4 rounded-sm flex items-center gap-3 font-bold text-sm md:text-base tracking-wider hover:text-white no-underline w-64 justify-center">
+                <svg class="w-6 h-6 wa-icon transition-transform group-hover:scale-110" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.991.603 2.016.924 3.332.924h.013c3.181 0 5.768-2.586 5.768-5.766 0-1.545-.6-2.994-1.692-4.085-1.09-1.09-2.539-1.693-4.086-1.693zm-9.354 15.179c1.554 1.348 3.528 2.149 5.666 2.149 4.853 0 8.802-3.948 8.802-8.802 0-2.351-.916-4.561-2.578-6.224-1.664-1.661-3.874-2.577-6.224-2.577-4.854 0-8.801 3.949-8.801 8.802 0 2.179.848 4.195 2.264 5.766l-1.513 5.522 5.513-1.513z"/>
+                </svg>
+                WHATSAPP
+            </a>
+
+            <!-- AI Terminal CTA -->
+            <button onclick="toggleTerminal()" class="interactive-element neon-btn neon-btn-secondary border border-green-400 text-green-400 px-8 py-4 rounded-sm flex items-center gap-3 font-bold text-sm md:text-base tracking-wider hover:text-white w-64 justify-center">
+                <span>✨</span> ACCESS AI
+            </button>
+        </div>
+
+        <!-- Footer Copyright -->
+        <div class="absolute bottom-6 text-gray-600 text-[10px] md:text-xs tracking-wider">
+            &copy; <script>document.write(new Date().getFullYear())</script> MECTIQ SYSTEMS. ALL RIGHTS RESERVED.
+        </div>
+    </main>
+
+    <!-- AI Terminal Modal -->
+    <div id="terminal-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 interactive-element">
+        <div class="terminal-window bg-black/90 w-full max-w-2xl h-[80vh] md:h-[600px] rounded-lg flex flex-col m-4 overflow-hidden relative">
+            
+            <!-- Terminal Header -->
+            <div class="bg-gray-900 border-b border-gray-700 p-2 flex justify-between items-center px-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span class="ml-2 text-xs text-gray-400 font-mono">MECTIQ-1.0 // TERMINAL_ACCESS</span>
+                </div>
+                <button onclick="toggleTerminal()" class="text-gray-400 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Terminal Output Area -->
+            <div id="terminal-output" class="flex-1 p-4 overflow-y-auto scrollbar-hide font-mono text-sm space-y-4">
+                <div class="text-gray-400">
+                    > SYSTEM_INIT... OK<br>
+                    > CONNECTING_TO_CORE... OK<br>
+                    > MECTIQ AI INTERFACE READY.<br>
+                    > Welcome. I am MECTIQ-1. How can I assist you with Robotics or IoT today?
+                </div>
+                <!-- Quick Action Chip -->
+                <div class="flex gap-2 mt-4">
+                    <button onclick="generateConcept()" class="text-xs bg-gray-800 hover:bg-gray-700 text-cyan-400 border border-cyan-400/30 px-3 py-1 rounded transition-colors flex items-center gap-1">
+                        <span>✨</span> Generate Robotic Concept
+                    </button>
+                </div>
+            </div>
+
+            <!-- Terminal Input Area -->
+            <div class="bg-gray-900/50 p-4 border-t border-gray-800">
+                <form onsubmit="handleCommand(event)" class="flex gap-2">
+                    <span class="text-green-500 font-bold select-none">></span>
+                    <input type="text" id="terminal-input" autocomplete="off" 
+                        class="bg-transparent border-none outline-none text-white w-full font-mono placeholder-gray-600" 
+                        placeholder="Type your command or question...">
+                    <button type="submit" class="text-gray-400 hover:text-white transition-colors">
+                        ↵
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="bottom-note" aria-hidden="true">MECTIQ • IoT · Robotics · Software</div>
-  </div>
+    <!-- Scripts -->
+    <script>
+        /**
+         * TYPEWRITER EFFECT
+         */
+        const textToType = "Where Code Meets Reality";
+        const typeWriterElement = document.getElementById('typewriter-text');
+        let charIndex = 0;
 
-<script>
-/* ==========================
-   Lightweight Matrix Rain
-   ========================== */
-(function(){
-  const canvas = document.getElementById('matrix');
-  const ctx = canvas.getContext('2d');
-  let width, height, columns, drops;
-  const fontSize = 14; // base font size for rain
-  const deviceRatio = Math.max(window.devicePixelRatio || 1, 1);
+        function typeWriter() {
+            if (charIndex < textToType.length) {
+                typeWriterElement.innerHTML += textToType.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriter, 100); // Typing speed
+            }
+        }
 
-  function resize(){
-    width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    canvas.width = Math.floor(width * deviceRatio);
-    canvas.height = Math.floor(height * deviceRatio);
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-    ctx.setTransform(deviceRatio, 0, 0, deviceRatio, 0, 0);
+        // Start typing after a brief delay
+        setTimeout(typeWriter, 500);
 
-    columns = Math.floor(width / fontSize) + 1;
-    drops = new Array(columns).fill(1).map(_ => Math.floor(Math.random() * height));
-  }
 
-  const glyphs = "01\u25A0\u25B2\u25CF<>/\\|{}[]()=_+-*#@";
-  function draw(){
-    // translucent bg to create trail
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.fillRect(0,0,width,height);
+        /**
+         * CANVAS NETWORK ANIMATION
+         * A connected particle system that reacts to mouse proximity.
+         */
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        // Configuration
+        const config = {
+            particleColor: 'rgba(0, 243, 255, 0.7)', // Cyan
+            lineColor: 'rgba(0, 243, 255, 0.2)',
+            particleAmount: 0, // Calculated based on screen size
+            defaultSpeed: 0.5,
+            variantSpeed: 1,
+            linkRadius: 140, // Distance to connect particles
+            mouseRadius: 200 // Distance to connect to mouse
+        };
 
-    ctx.font = fontSize + 'px monospace';
-    for(let i=0;i<columns;i++){
-      const text = glyphs.charAt(Math.floor(Math.random() * glyphs.length));
-      const x = i * fontSize;
-      const y = drops[i] * fontSize;
+        // Mouse tracking
+        let mouse = { x: null, y: null };
 
-      // color gradient between cyan and faint green
-      const alpha = 0.08 + Math.random() * 0.7;
-      ctx.fillStyle = 'rgba(0,255,220,'+ (0.12 + Math.random()*0.7) +')';
-      ctx.fillText(text, x, y);
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+        
+        // Touch support for mobile
+        window.addEventListener('touchmove', (e) => {
+            mouse.x = e.touches[0].clientX;
+            mouse.y = e.touches[0].clientY;
+        });
 
-      // small bright lead
-      if(Math.random() > 0.92){
-        ctx.fillStyle = 'rgba(255,255,255,0.9)';
-        ctx.fillText(text, x, y - fontSize/3);
-      }
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
 
-      if(y > height + Math.random() * 1000) {
-        drops[i] = 0;
-      }
-      drops[i]++;
-    }
-  }
+        // Resize handling
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            
+            // Adjust particle count based on screen area (responsiveness)
+            const area = width * height;
+            config.particleAmount = Math.floor(area / 9000); // 1 particle per 9000px
+            
+            initParticles();
+        }
 
-  let animId;
-  function loop(){
-    draw();
-    animId = requestAnimationFrame(loop);
-  }
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * config.variantSpeed;
+                this.vy = (Math.random() - 0.5) * config.variantSpeed;
+                this.size = Math.random() * 2 + 1; // Random size 1-3px
+            }
 
-  // initialize
-  resize();
-  loop();
-  window.addEventListener('resize', () => {
-    cancelAnimationFrame(animId);
-    resize();
-    loop();
-  });
+            update() {
+                // Move
+                this.x += this.vx;
+                this.y += this.vy;
 
-  // reduce activity on mobile to save battery (stop after idle)
-  let timeout;
-  window.addEventListener('visibilitychange', () => {
-    if(document.hidden){ cancelAnimationFrame(animId); }
-    else { loop(); }
-  });
+                // Bounce off edges
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
 
-})();
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = config.particleColor;
+                ctx.fill();
+            }
+        }
 
-/* ==========================
-   Occasional Glitch Trigger
-   ========================== */
-(function(){
-  const title = document.querySelector('.title');
-  function triggerGlitch(){
-    // add glitch class a few times in rapid bursts to feel like signal interference
-    title.classList.add('glitch');
-    // short random duration to vary the glitch
-    setTimeout(()=> title.classList.remove('glitch'), 360 + Math.random()*420);
-  }
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < config.particleAmount; i++) {
+                particles.push(new Particle());
+            }
+        }
 
-  // randomly trigger glitch every 4-12 seconds with occasional double-bursts
-  function schedule(){
-    const next = 4000 + Math.random()*9000;
-    setTimeout(()=> {
-      // sometimes burst multiple quick glitches
-      if(Math.random() < 0.25){
-        triggerGlitch();
-        setTimeout(triggerGlitch, 120 + Math.random()*220);
-      } else {
-        triggerGlitch();
-      }
-      schedule();
-    }, next);
-  }
-  // start after small delay to let page settle
-  setTimeout(schedule, 800);
-})();
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Update and draw particles
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
 
-/* ==========================
-   Accessibility & small niceties
-   ========================== */
-/* Allow keyboard focus styles on CTA */
-(function(){
-  const cta = document.querySelector('.cta');
-  cta.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter' || e.key === ' '){
-      cta.click();
-    }
-  });
-})();
+                // Connect particles to each other
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
 
-</script>
+                    if (distance < config.linkRadius) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = config.lineColor;
+                        ctx.lineWidth = 1 - (distance / config.linkRadius); // Fade out as distance increases
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+
+                // Connect particles to mouse
+                if (mouse.x != null) {
+                    const dx = particles[i].x - mouse.x;
+                    const dy = particles[i].y - mouse.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < config.mouseRadius) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'rgba(0, 243, 255, 0.4)'; // Brighter connection to mouse
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        // Initialize Canvas
+        window.addEventListener('resize', resize);
+        resize();
+        animate();
+
+
+        /**
+         * AI TERMINAL & GEMINI INTEGRATION
+         */
+        const modal = document.getElementById('terminal-modal');
+        const output = document.getElementById('terminal-output');
+        const input = document.getElementById('terminal-input');
+        
+        function toggleTerminal() {
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                // Small timeout to allow display:block to apply before opacity transition
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    input.focus();
+                }, 10);
+            } else {
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function appendMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = type === 'user' ? 'user-message' : 'ai-message';
+            
+            if (type === 'user') {
+                div.innerHTML = `<span class="text-green-500 mr-2">></span> ${text}`;
+            } else {
+                div.innerHTML = `<span class="text-cyan-500 mr-2">MECTIQ:</span> ${text}`;
+            }
+            
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function appendLoading() {
+            const div = document.createElement('div');
+            div.id = 'loading-indicator';
+            div.className = 'text-cyan-500 typing-indicator';
+            div.innerHTML = `PROCESSING_DATA`;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+            return div;
+        }
+
+        async function handleCommand(e) {
+            e.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+
+            appendMessage(text, 'user');
+            input.value = '';
+
+            await callGemini(text);
+        }
+
+        async function generateConcept() {
+            const prompt = "Generate a short, innovative, futuristic robotic product concept that solves a real-world problem. Format: 'CONCEPT: [Name] - [Description]'. Keep it under 2 sentences.";
+            appendMessage("EXECUTING: GENERATE_ROBOTIC_CONCEPT_PROTOCOL...", 'user');
+            await callGemini(prompt, true);
+        }
+
+        async function callGemini(prompt, isConcept = false) {
+            const loading = appendLoading();
+            const apiKey = ""; // API key will be injected by the environment
+
+            const systemPrompt = "You are MECTIQ-1, an advanced AI terminal for a high-tech robotics company called MECTIQ. Your tone is futuristic, precise, and helpful. You specialize in robotics, IoT, and automation. Keep answers concise (under 80 words) and use technical terminology where appropriate but remain accessible. If asked about MECTIQ's specific products, say they are 'classified' or 'in development'.";
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: prompt }]
+                        }],
+                        systemInstruction: {
+                            parts: [{ text: systemPrompt }]
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Remove loading indicator
+                loading.remove();
+
+                if (data.error) {
+                    appendMessage("ERROR: CONNECTION_INTERRUPTED. PLEASE TRY AGAIN.", 'ai');
+                    console.error("Gemini API Error:", data.error);
+                } else {
+                    let aiText = data.candidates[0].content.parts[0].text;
+                    // Add sparkle if it's a concept generation
+                    if (isConcept) aiText = "✨ " + aiText;
+                    appendMessage(aiText, 'ai');
+                }
+
+            } catch (error) {
+                loading.remove();
+                appendMessage("CRITICAL ERROR: NETWORK_FAILURE.", 'ai');
+                console.error("Fetch Error:", error);
+            }
+        }
+    </script>
 </body>
 </html>
